@@ -1,0 +1,28 @@
+{
+  "name": "intp-shorts",
+  "version": "1.0.0",
+  "description": "커뮤니티 게시글 형식 유튜브 숏츠(9:16)를 대량 생산하기 위한 재사용 가능한 생성기. content.json만 교체하면 새 숏츠를 만들 수 있다.",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "capture": "node scripts/capture.js",
+    "render": "node scripts/render.js",
+    "video": "node scripts/render.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dsf900601/intp-shorts.git"
+  },
+  "keywords": ["shorts", "youtube-shorts", "community-post", "video-generator"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dsf900601/intp-shorts/issues"
+  },
+  "homepage": "https://github.com/dsf900601/intp-shorts#readme",
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>커뮤니티 숏츠 생성기</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 실제 출력 프레임: 1080x1920 고정. 브라우저 창 크기에 맞춰 축소 표시된다. -->
+  <div class="viewport">
+    <div class="stage" id="stage">
+
+      <!-- 상단 커뮤니티 헤더 -->
+      <header class="header">
+        <div class="header-left">
+          <div class="avatar" aria-hidden="true"></div>
+          <div class="header-text">
+            <span class="community-name" id="communityName">익명게시판</span>
+            <span class="posted-at" id="postedAt">방금 전</span>
+          </div>
+        </div>
+        <div class="header-right" aria-hidden="true">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </header>
+
+      <!-- 게시글 제목: 첫 화면부터 바로 노출 -->
+      <h1 class="title" id="title"></h1>
+
+      <!-- 본문: 문단(문장) 단위로 순차 노출되는 영역 -->
+      <main class="body-area" id="bodyArea">
+        <!-- script.js가 bodySections를 여기에 렌더링 -->
+      </main>
+
+      <!-- 첨부 이미지 영역: 이미지가 없으면 자동으로 접힌다 -->
+      <div class="image-slot" id="imageSlot" aria-hidden="true">
+        <img id="attachedImage" alt="" />
+      </div>
+
+      <!-- 강조 장면: 게시판 레이아웃을 깨고 화면 중앙에 크게 노출 -->
+      <section class="overlay emphasis-overlay" id="emphasisOverlay" aria-hidden="true">
+        <p class="emphasis-text" id="emphasisText"></p>
+      </section>
+
+      <!-- 결론 장면 -->
+      <section class="overlay conclusion-overlay" id="conclusionOverlay" aria-hidden="true">
+        <div class="conclusion-text" id="conclusionText"></div>
+      </section>
+
+      <!-- 마지막 댓글: 아래에서 슬라이드 업 -->
+      <div class="comment-bar" id="commentBar" aria-hidden="true">
+        <div class="comment-avatar"></div>
+        <div class="comment-bubble">
+          <span class="comment-label">댓글</span>
+          <p class="comment-text" id="commentText"></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
