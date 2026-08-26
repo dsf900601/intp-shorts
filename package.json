@@ -1,0 +1,12 @@
+{
+  "name": "intp-shorts-template",
+  "private": true,
+  "version": "1.0.0",
+  "description": "커뮤니티 게시글형 유튜브 Shorts 템플릿 (HTML/CSS/JS) + MP4 렌더러",
+  "scripts": {
+    "render": "node render/render.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}

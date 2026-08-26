@@ -10,10 +10,12 @@
 ## 파일 구조
 
 ```
-index.html   화면 뼈대 (구조만 있고, 텍스트는 비어 있음)
-style.css    디자인 & 애니메이션 (게시글/댓글 스타일, 등장 효과)
-content.js   ✏️ 실제로 수정하는 파일 — 제목/본문/댓글/타이밍/영상 길이
-script.js    content.js 데이터를 읽어 타이밍에 맞춰 화면에 뿌려주는 엔진
+index.html      화면 뼈대 (구조만 있고, 텍스트는 비어 있음)
+style.css       디자인 & 애니메이션 (게시글/댓글 스타일, 등장 효과)
+content.js      ✏️ 실제로 수정하는 파일 — 제목/본문/댓글/타이밍/영상 길이
+script.js       content.js 데이터를 읽어 타이밍에 맞춰 화면에 뿌려주는 엔진
+render/render.js  브라우저 화면을 실제 타이밍 그대로 녹화해 MP4로 변환하는 스크립트
+package.json    `npm run render` 명령 정의
 ```
 
 **새 숏츠를 만들 때는 `content.js`만 수정하면 됩니다.**
@@ -156,7 +158,44 @@ comments: [
 
 ---
 
-## 6. 다음 숏츠를 만드는 가장 빠른 방법
+## 6. MP4로 자동 출력하기 (`npm run render`)
+
+수동으로 화면을 녹화하지 않아도, 명령어 한 번으로 `index.html?clean=1` 화면을
+**실제 재생 속도 그대로** 녹화해서 1080×1920 / 30fps MP4 파일로 만들어주는
+스크립트가 포함되어 있습니다. (`render/render.js`)
+
+### 사전 준비 (최초 1회)
+
+1. [Node.js](https://nodejs.org)가 설치되어 있어야 합니다.
+2. [ffmpeg](https://ffmpeg.org)가 설치되어 있어야 합니다.
+   - macOS: `brew install ffmpeg`
+   - Ubuntu/Debian: `sudo apt install ffmpeg`
+   - Windows: [공식 빌드](https://ffmpeg.org/download.html) 다운로드 후 PATH에 등록
+3. 프로젝트 폴더에서 의존성을 설치합니다.
+   ```bash
+   npm install
+   npx playwright install chromium
+   ```
+
+### 실행
+
+```bash
+npm run render
+```
+
+- `content.js`의 `totalDuration` 값을 자동으로 읽어, 그 길이(+약 1.5초 여유)만큼
+  브라우저를 실제로 재생시키면서 녹화합니다.
+- 기존 CSS/JS 애니메이션과 타이밍은 전혀 건드리지 않고, 화면에 보이는 그대로 캡처합니다.
+- 녹화 화면은 항상 `?clean=1` 상태(편집용 UI 없이 순수 결과 화면)로 캡처됩니다.
+- 완료되면 아래 경로에 최종 영상이 생성됩니다.
+  ```
+  output/shorts.mp4   (1080x1920, 30fps, H.264 mp4)
+  ```
+- `content.js`만 수정하고 다시 `npm run render`를 실행하면, 새 내용으로 MP4가 다시 만들어집니다.
+
+---
+
+## 7. 다음 숏츠를 만드는 가장 빠른 방법
 
 1. `content.js` 파일 하나만 열어서 아래 항목을 새 글 내용으로 교체합니다.
    - `title.text` (제목)
@@ -165,6 +204,6 @@ comments: [
    - `totalDuration` (전체 영상 길이)
 2. `index.html`을 새로고침해서 타이밍이 자연스러운지 눈으로 확인합니다.
    (문단이 너무 빨리/늦게 나오면 `time` 값만 조정하면 됩니다)
-3. 마음에 들면 `index.html?clean=1`로 접속해서 위 "화면 녹화 방법"대로 녹화합니다.
+3. 마음에 들면 `npm run render`로 바로 MP4를 뽑거나, 위 "화면 녹화 방법"대로 직접 녹화합니다.
 
 즉, **`content.js`만 갈아끼우면 코드 구조를 전혀 건드리지 않고 새로운 숏츠를 계속 찍어낼 수 있습니다.**
