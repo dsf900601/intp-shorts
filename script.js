@@ -11,6 +11,10 @@
 (function () {
   "use strict";
 
+  // 녹화 도구(render.js)가 "이 스크립트의 타임라인이 실제로 시작된 시점"을
+  // 정확히 알 수 있게 해주는 표시입니다. 화면에는 아무 영향이 없습니다.
+  window.__SHORTS_TIMELINE_STARTED__ = true;
+
   const data = window.SHORTS_CONTENT;
   if (!data) {
     console.error("content.js 가 로드되지 않았습니다. index.html의 스크립트 순서를 확인하세요.");
