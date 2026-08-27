@@ -1,0 +1,13 @@
+{
+  "name": "intp-shorts-render",
+  "private": true,
+  "version": "1.0.0",
+  "description": "웹 미리보기(../index.html)를 수정하지 않고, 정확한 프레임 단위 타임라인 제어로 MP4를 렌더링하는 도구",
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  }
+}

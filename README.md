@@ -24,6 +24,35 @@ node serve.js
 
 영상은 자동 재생되며, 끝나면 처음부터 반복 재생됩니다.
 
+## MP4로 렌더링하기 (업로드용 파일 만들기)
+
+브라우저 미리보기와 별개로, `render/`에 있는 스크립트로 실제 업로드 가능한
+MP4 파일을 만들 수 있습니다. `index.html`/`src/*`는 전혀 건드리지 않고,
+Playwright로 그 페이지를 그대로 열어서 프레임 단위로 캡처한 뒤 ffmpeg로
+합성하는 방식입니다 (실시간 화면 녹화가 아니라, 프레임마다 정확한 재생
+시간을 강제로 주입하는 방식이라 시스템이 느려도 프레임이 밀리거나
+드롭되지 않습니다).
+
+```bash
+# 최초 1회 (Playwright 설치 — 이 환경은 Chromium이 이미 있어 브라우저는
+# 다시 받지 않습니다. PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 참고)
+cd render && npm install
+
+# 렌더링 (반복 실행 가능 — src/data.js를 바꾼 뒤 다시 실행하면
+# 바뀐 러닝타임에 맞춰 자동으로 새 MP4가 만들어집니다)
+npm run render
+```
+
+기본 출력 경로는 `render/out/reading-club-ep2.mp4`이며, `--out <경로>` /
+`--fps <숫자>` 인자로 바꿀 수 있습니다 (`node render.mjs --out out/foo.mp4`).
+사양은 세로 1080×1920, 30fps, H.264(MP4, yuv420p) + 무음 AAC 오디오
+트랙(TTS 음원이 아직 없어 무음 — 나중에 실제 음원을 붙이면 자연스럽게
+소리가 들어갑니다)이며, 렌더링이 끝나면 스크립트가 스스로 총 프레임 수를
+출력해 보여줍니다. `ffmpeg`가 시스템에 없으면 먼저 설치해야 합니다
+(`apt-get install -y ffmpeg` 등).
+
+`render/render.mjs` 안의 주석에 정확한 동작 원리가 설명되어 있습니다.
+
 ## 파일 구조
 
 ```
@@ -32,6 +61,7 @@ src/data.js      ★ 콘텐츠 데이터 — 새 에피소드를 만들 때 이 
 src/style.css    레이아웃 · 카드 디자인 · 활성화 효과 · 애니메이션
 src/app.js       렌더링 + 타임라인 엔진 (콘텐츠 로직 없음, 보통 건드릴 필요 없음)
 serve.js         의존성 없는 로컬 정적 서버 (node serve.js)
+render/          MP4 렌더러 (render.mjs, package.json) — 위 "MP4로 렌더링하기" 참고
 ```
 
 **영상 UI(로직)와 콘텐츠(데이터)가 완전히 분리**되어 있습니다.
