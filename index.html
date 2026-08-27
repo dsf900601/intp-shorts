@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>화상회의형 숏츠 템플릿</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+  <div class="page">
+    <div class="stage-wrapper" id="stageWrapper">
+      <div class="stage" id="stage">
+
+        <!-- 헤더: 회의 제목 + 통화시간 -->
+        <div class="meeting-header">
+          <div class="meeting-title" id="meetingTitle"></div>
+          <div class="meeting-clock" id="meetingClock"></div>
+        </div>
+
+        <!-- 상단 큰 카드 2개 (primary) -->
+        <div class="grid-primary" id="gridPrimary"></div>
+
+        <!-- 하단 작은 카드 3개 (reaction / background) -->
+        <div class="grid-secondary" id="gridSecondary"></div>
+
+        <!-- 현재 발화자 자막 -->
+        <div class="subtitle-area" id="subtitleArea">
+          <div class="subtitle-speaker" id="subtitleSpeaker"></div>
+          <div class="subtitle-text" id="subtitleText"></div>
+        </div>
+
+        <!-- 엔딩 오버레이 -->
+        <div class="ending-overlay" id="endingOverlay">
+          <div class="ending-text" id="endingText"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 미리보기 전용 컨트롤 (실제 영상에는 포함되지 않음) -->
+    <div class="controls">
+      <button id="btnRestart" type="button">⟲ 처음부터</button>
+      <button id="btnPause" type="button">⏸ 일시정지</button>
+      <button id="btnAudio" type="button">🔈 오디오 켜기</button>
+      <span class="time-readout" id="timeReadout"></span>
+    </div>
+  </div>
+
+  <script src="src/data.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>
