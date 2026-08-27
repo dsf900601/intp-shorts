@@ -1,7 +1,7 @@
 # 참가자 아바타 이미지
 
-`src/data.js`의 `avatarSrc` / `reactionAvatarSrc`가 가리키는 실제 이미지 파일을
-넣는 폴더입니다. 아래 5개 파일명으로 이미지를 넣기만 하면 코드 수정 없이
+`src/data.js`의 `avatarSrc` / `reactionAvatarSrc`가 가리키는 실제 이미지
+파일이 들어 있는 폴더입니다. 같은 파일명으로 덮어쓰기만 하면 코드 수정 없이
 바로 반영됩니다 (`src/style.css`, `src/app.js`는 건드릴 필요 없음).
 
 ```

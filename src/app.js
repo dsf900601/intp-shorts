@@ -62,7 +62,6 @@
 
     card.innerHTML = `
       <div class="avatar-frame" style="--tint:${tint}">
-        ${imgTag}
         <div class="avatar-fallback">
           <div class="avatar-circle" style="background:${tint}">
             <div class="avatar-face">
@@ -72,6 +71,7 @@
             </div>
           </div>
         </div>
+        ${imgTag}
       </div>
       <div class="name-badge">
         <span class="name">${p.name}</span>
