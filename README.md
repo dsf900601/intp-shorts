@@ -54,9 +54,12 @@ serve.js         의존성 없는 로컬 정적 서버 (node serve.js)
 공간을 모두 차지하는 `flex: 1`이라서, 대사 길이와 무관하게 항상 화면 세로
 약 52~62% 지점(메인 2인 카드 아래 · 하단 3인 카드 위)에 위치합니다.
 
-참가자 카드는 실제 화상회의 앱의 "카메라 꺼짐" 타일처럼, 참가자 색상의 큰
-원형 아바타(간결한 벡터 얼굴 포함)를 중앙에 크게 배치하고 이름은 카드
-좌하단에 작은 배지로 오버레이했습니다.
+참가자 카드는 실제 화상회의 카메라 화면처럼, 얼굴/상반신 이미지(`avatarSrc`)가
+카드 전체를 채우도록(`object-fit: cover`) 표시하고 이름은 카드 좌하단에 작은
+배지로 오버레이했습니다. 아직 실제 캐릭터 이미지가 없거나 파일 로드에
+실패하면 참가자 색상 원 + 간결한 벡터 얼굴로 자동 폴백되어, 이미지 한 장이
+빠져도 전체 UI는 깨지지 않습니다. 자세한 내용은 아래 "참가자 아바타 이미지"
+절 참고.
 
 ### 화자 활성화 방식
 
@@ -72,6 +75,31 @@ serve.js         의존성 없는 로컬 정적 서버 (node serve.js)
 - `role: "reaction"`(엄지)은 활성화 색상이 앰버색으로 구분되고, 리액션 중에만
   카드가 1.03배로 아주 미세하게 커졌다 리액션이 끝나면 즉시 원래 크기로
   돌아옵니다(과한 줌/바운스 없음).
+- 활성화되는 동안 이미지 밝기가 살짝(`brightness(1.08)`) 올라갑니다. 확대/줌
+  효과는 사용하지 않습니다.
+- 참가자에게 `reactionAvatarSrc`가 지정되어 있으면, 그 참가자가 활성화되는
+  동안만 0.15초 짧은 fade로 이미지를 바꿔 보여주고 비활성화 즉시 원래
+  `avatarSrc`로 되돌립니다 (현재는 엄지의 놀란 표정 전환에 사용). 이 로직은
+  `role`이 아니라 `reactionAvatarSrc` 필드 유무로만 동작하므로, background
+  참가자는애초에 활성화 자체가 되지 않아 영향받지 않습니다.
+
+### 참가자 아바타 이미지
+
+`src/data.js`의 각 참가자 객체에 다음 필드를 지정할 수 있습니다.
+
+| 필드 | 설명 |
+|---|---|
+| `avatarSrc` | 얼굴/상반신 이미지 경로. 카드 전체를 채워 표시(`object-fit: cover`) |
+| `avatarPosition` | 크롭 시 기준점. 예: `"50% 32%"` (가로 중앙, 세로 위쪽 32%) — 참가자마다 다르게 지정해 얼굴이 잘리지 않게 조정 |
+| `reactionAvatarSrc` | (선택) 활성화되는 동안만 잠깐 보여줄 이미지. 비활성화 즉시 `avatarSrc`로 복귀 |
+| `avatar.color` / `avatar.initial` | 이미지가 없거나 로드 실패 시 쓰이는 폴백 벡터 얼굴의 색상/이니셜 |
+
+실제 이미지 파일은 `assets/avatars/`에 넣으며, 예상 파일명과 이미지 스펙
+권장값은 `assets/avatars/README.md`에 정리해 두었습니다. 참가자별 캐릭터
+디자인 방향(민수는 둥근 눈에 부드러운 인상, INTP는 차분한 눈매에 표정
+변화가 적음 등)은 `src/data.js`의 `participants` 배열 위 주석에 있습니다.
+지금은 실제 아트가 없어 5명 모두 폴백(색상 원 + 벡터 얼굴)으로 보이며,
+같은 파일명으로 이미지를 넣기만 하면 코드 수정 없이 바로 반영됩니다.
 
 ### 정적(침묵) 처리
 
@@ -107,7 +135,9 @@ totalDuration = endingStart + endingHold (엔딩 문구 유지 시간)
 | 모임 제목 / 부제 / 시작 통화시간 | `TEMPLATE.meetingTitle`, `meetingSubtitle`, `startClock` |
 | 참가자 이름 | `TEMPLATE.participants[].name` |
 | 참가자 역할 (primary/reaction/background) | `TEMPLATE.participants[].role` |
-| 참가자 이미지 (아바타) | `TEMPLATE.participants[].avatar.color`(배경색) / `avatar.initial`(이니셜) — 실제 이미지를 쓰려면 `avatar.image: "/img/파일명.png"` 추가 (있으면 이니셜 대신 이미지 사용) |
+| 참가자 얼굴 이미지 | `TEMPLATE.participants[].avatarSrc` (파일은 `assets/avatars/`에 배치), 크롭 기준점은 `avatarPosition` |
+| 참가자 리액션 표정 이미지 | `TEMPLATE.participants[].reactionAvatarSrc` (활성화 중에만 잠깐 표시) |
+| 이미지 없을 때 폴백 색상/이니셜 | `TEMPLATE.participants[].avatar.color`, `avatar.initial` |
 | 참가자 음성 파일 경로 | `TEMPLATE.participants[].voice` (예: `/audio/minsu_01.wav`) |
 | 대사 내용 | `TEMPLATE.dialogue[].text` |
 | 대사 시작 시간 | `TEMPLATE.dialogue[].start` (초 단위) |
@@ -127,8 +157,8 @@ totalDuration = endingStart + endingHold (엔딩 문구 유지 시간)
   넣으면 재생됩니다(`audio/` 폴더에 실제 파일 추가 필요). 지금은 파일이 없어도
   에러 없이 무시되도록 처리해뒀습니다. 미리보기 화면의 "🔈 오디오 켜기" 버튼을
   눌러야 브라우저 자동재생 정책에 걸리지 않고 소리가 재생됩니다.
-- **실제 아바타 이미지**: `avatar.image` 필드만 추가하면 이니셜 원형 대신
-  이미지가 표시됩니다.
+- **실제 아바타 이미지**: `assets/avatars/`에 참가자별 파일(`minsu.png` 등)만
+  넣으면 `avatarSrc`가 자동으로 그 이미지를 불러옵니다. 코드 수정 불필요.
 - **다른 소재로 재사용**: 데이터 구조(`meetingTitle`, `participants`,
   `dialogue`, `endingText` 등)가 소재에 종속되지 않도록 설계되어 있어,
   회사 회의 / 조별과제 / 소개팅 / 게임 음성채팅 등 어떤 소재든 같은 스키마로

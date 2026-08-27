@@ -13,13 +13,39 @@ const TEMPLATE = {
 
   // ── 참가자 목록 ────────────────────────────────────────────────────────
   // role: "primary"(주 화자) | "reaction"(짧은 리액션만) | "background"(끝까지 발화 없음)
-  // avatar.image 를 넣으면 이니셜 대신 실제 이미지를 사용합니다 (예: "/img/minsu.png").
+  //
+  // avatarSrc        참가자 얼굴/상반신 이미지 경로. 카드 안을 꽉 채워 표시됩니다
+  //                   (object-fit: cover). 파일이 없거나 로드에 실패하면 자동으로
+  //                   avatar.color/initial 벡터 얼굴로 폴백되므로 이미지 한 장이
+  //                   빠져도 전체 UI는 깨지지 않습니다.
+  // avatarPosition   크롭 시 얼굴이 잘리지 않도록 하는 object-position 값.
+  //                   예: "50% 30%" = 가로 중앙, 세로 위쪽 30% 지점을 기준으로 크롭.
+  // reactionAvatarSrc(선택) 이 참가자가 활성화(발화/리액션)되는 동안만 잠깐
+  //                   바꿔 보여줄 이미지. 리액션이 끝나면 즉시 avatarSrc로 복귀.
+  //                   지금은 "엄지"에만 지정했지만 필드 자체는 범용이라 다른
+  //                   참가자에게 붙여도 동일하게 동작합니다.
+  //
+  // 아직 실제 캐릭터 아트(minsu.png 등)가 없으므로 assets/avatars/ 아래 파일명만
+  // 미리 정해둔 상태입니다. 같은 파일명으로 이미지를 넣기만 하면 코드 수정 없이
+  // 바로 반영됩니다 (assets/avatars/README.md 참고).
+  //
+  // 캐릭터 디자인 방향 (실제 원화 제작 시 참고용 — 세밀한 차이만 두고 같은
+  // 일러스트 스타일/카메라 거리/조명 톤을 공유하는 "같은 세트"처럼 만들 것):
+  //   민수    : 둥근 눈, 자연스러운 표정, 살짝 올라간 입꼬리 — 부드럽고 친근한 인상
+  //   INTP   : 차분한 눈매, 표정 변화 적음, 입은 거의 일자, 안경 또는 단정한
+  //            헤어스타일 — 분석적이지만 음침하지 않은 중립적 인상
+  //   엄지    : 눈을 조금 크게, 표정 변화가 잘 드러나는 얼굴 — 기본은 평범한 표정,
+  //            reactionAvatarSrc는 놀란/당황한 표정으로 제작
+  //   지영    : 부드러운 눈매, 민수와는 다른 얼굴형 — 차분한 기본 표정
+  //   현우    : 민수/INTP와 다른 눈썹·눈 모양, 다른 헤어스타일 — 무난한 기본 표정
   participants: [
     {
       id: "minsu",
       name: "민수",
       role: "primary",
-      avatar: { color: "#4C6EF5", initial: "민" },
+      avatar: { color: "#4C6EF5", initial: "민" }, // 이미지 없을 때 쓰는 폴백 벡터 얼굴
+      avatarSrc: "./assets/avatars/minsu.png",
+      avatarPosition: "50% 32%",
       voice: "/audio/minsu_01.wav", // 참가자 기본 음색 (추후 TTS 연결용, 지금은 미사용)
     },
     {
@@ -27,6 +53,8 @@ const TEMPLATE = {
       name: "INTP",
       role: "primary",
       avatar: { color: "#12B886", initial: "T" },
+      avatarSrc: "./assets/avatars/intp.png",
+      avatarPosition: "50% 32%",
       voice: "/audio/intp_01.wav",
     },
     {
@@ -34,6 +62,9 @@ const TEMPLATE = {
       name: "엄지",
       role: "reaction",
       avatar: { color: "#F59F00", initial: "엄" },
+      avatarSrc: "./assets/avatars/umji.png",
+      reactionAvatarSrc: "./assets/avatars/umji-reaction.png", // 리액션 순간에만 임시 사용
+      avatarPosition: "50% 28%",
       voice: "/audio/umji_reaction_01.wav",
     },
     {
@@ -41,12 +72,16 @@ const TEMPLATE = {
       name: "지영",
       role: "background",
       avatar: { color: "#868E96", initial: "지" },
+      avatarSrc: "./assets/avatars/jiyoung.png",
+      avatarPosition: "50% 28%",
     },
     {
       id: "hyunwoo",
       name: "현우",
       role: "background",
       avatar: { color: "#868E96", initial: "현" },
+      avatarSrc: "./assets/avatars/hyunwoo.png",
+      avatarPosition: "50% 28%",
     },
   ],
 

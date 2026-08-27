@@ -49,20 +49,30 @@
     card.dataset.id = p.id;
     card.dataset.role = p.role;
 
-    const hasImage = !!(p.avatar && p.avatar.image);
     const tint = p.avatar?.color || "#555";
-    // 이미지가 없으면 참가자 색상 원 + 추상 벡터 얼굴(눈 2개 + 입)로 표현.
-    // 실사 얼굴 대신 최소한의 표정만 주어 "빈 카드"처럼 보이지 않게 한다.
-    const avatarInner = hasImage
-      ? `<img src="${p.avatar.image}" alt="${p.name}" />`
-      : `<div class="avatar-face">
-           <span class="af-eye af-eye--l"></span>
-           <span class="af-eye af-eye--r"></span>
-           <span class="af-mouth"></span>
-         </div>`;
+    const position = p.avatarPosition || "50% 32%";
+    // avatarSrc가 있으면 카드를 꽉 채우는 실제 이미지를, 없거나 로드에
+    // 실패하면(onerror) 참가자 색상 원 + 추상 벡터 얼굴로 자동 폴백한다.
+    // 이미지 한 장이 빠져도 전체 UI는 깨지지 않는다.
+    const imgTag = p.avatarSrc
+      ? `<img class="avatar-img" src="${p.avatarSrc}" alt="${p.name}"
+             style="object-position:${position}"
+             onerror="this.style.display='none'" />`
+      : "";
 
     card.innerHTML = `
-      <div class="avatar" style="--tint:${tint}; background:${tint}">${avatarInner}</div>
+      <div class="avatar-frame" style="--tint:${tint}">
+        ${imgTag}
+        <div class="avatar-fallback">
+          <div class="avatar-circle" style="background:${tint}">
+            <div class="avatar-face">
+              <span class="af-eye af-eye--l"></span>
+              <span class="af-eye af-eye--r"></span>
+              <span class="af-mouth"></span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="name-badge">
         <span class="name">${p.name}</span>
         <div class="meter"><span></span><span></span><span></span><span></span></div>
@@ -135,11 +145,38 @@
   let activeId = null;
   let activeSegKey = null;
 
+  // 활성화되는 동안만 잠깐 다른 이미지(예: 엄지의 놀란 표정)로 바꿔 보여주고,
+  // 비활성화되면 즉시 기본 이미지로 되돌린다. 짧은 fade로만 전환하며,
+  // reactionAvatarSrc가 없는 참가자에게는 아무 영향이 없다.
+  function crossfadeAvatar(id, nextSrc) {
+    const p = participantById[id];
+    const img = cardEls[id] && cardEls[id].querySelector(".avatar-img");
+    if (!p || !img || !nextSrc || img.dataset.src === nextSrc) return;
+    img.dataset.src = nextSrc;
+    img.classList.add("avatar-swap");
+    setTimeout(() => {
+      if (img.dataset.src !== nextSrc) return; // 그 사이 다시 바뀌었으면 무시
+      img.src = nextSrc;
+      img.classList.remove("avatar-swap");
+    }, 150);
+  }
+
   function setActiveCard(id) {
     if (id === activeId) return;
-    if (activeId && cardEls[activeId]) cardEls[activeId].classList.remove("active");
+
+    if (activeId && cardEls[activeId]) {
+      cardEls[activeId].classList.remove("active");
+      const prevP = participantById[activeId];
+      if (prevP && prevP.reactionAvatarSrc) crossfadeAvatar(activeId, prevP.avatarSrc);
+    }
+
     activeId = id;
-    if (id && cardEls[id]) cardEls[id].classList.add("active");
+
+    if (id && cardEls[id]) {
+      cardEls[id].classList.add("active");
+      const p = participantById[id];
+      if (p && p.reactionAvatarSrc) crossfadeAvatar(id, p.reactionAvatarSrc);
+    }
   }
 
   function updateSubtitle(seg) {

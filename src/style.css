@@ -80,26 +80,19 @@ html, body {
   color: var(--text-dim);
 }
 
-/* ── 참가자 카드 공통 (오프캠 화상회의 타일 스타일) ───────────────────── */
+/* ── 참가자 카드 공통 (실제 화상회의 카메라 타일 스타일) ───────────────── */
 .card {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(120% 120% at 50% 38%, #1f2330 0%, var(--card-bg) 70%);
+  background: var(--card-bg);
   border: 3px solid var(--card-border);
   border-radius: 28px;
   overflow: hidden;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease,
-    opacity 0.25s ease, transform 0.25s ease;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease,
+    transform 0.25s ease;
 }
 
 .card[data-role="background"] {
   opacity: 0.82;
-}
-
-.card.active {
-  background: radial-gradient(120% 120% at 50% 38%, #262c40 0%, #1c2130 70%);
 }
 
 .card[data-role="primary"].active {
@@ -115,19 +108,62 @@ html, body {
   z-index: 2;
 }
 
-/* 아바타: 참가자 색상 원 + 은은한 배경 글로우 + 추상 벡터 얼굴 */
-.avatar {
-  position: relative;
-  border-radius: 50%;
+/* 얼굴/상반신 이미지가 카드 전체를 채우는 프레임.
+   avatarSrc가 없거나 로드에 실패하면 뒤에 깔린 .avatar-fallback이 그대로 보인다. */
+.avatar-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.avatar-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.15s ease, filter 0.25s ease;
+}
+
+.avatar-img.avatar-swap {
+  opacity: 0;
+}
+
+/* 활성화 시 이미지가 살짝 밝아진다 (과한 확대/줌 없이) */
+.card.active .avatar-img,
+.card.active .avatar-circle {
+  filter: brightness(1.08);
+}
+
+.card[data-role="primary"].active .avatar-frame {
+  box-shadow: inset 0 0 0 6px rgba(91, 141, 239, 0.55);
+}
+
+.card[data-role="reaction"].active .avatar-frame {
+  box-shadow: inset 0 0 0 6px rgba(245, 165, 36, 0.55);
+}
+
+/* 이미지가 없을 때의 폴백: 참가자 색상 원 + 추상 벡터 얼굴(눈 2개 + 입) */
+.avatar-fallback {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  user-select: none;
-  transition: box-shadow 0.25s ease;
+  background: radial-gradient(120% 120% at 50% 38%, #1f2330 0%, var(--card-bg) 70%);
 }
 
-.avatar::before {
+.avatar-circle {
+  position: relative;
+  width: 60%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: filter 0.25s ease;
+}
+
+.avatar-circle::before {
   content: "";
   position: absolute;
   inset: -18%;
@@ -138,21 +174,7 @@ html, body {
   z-index: -1;
 }
 
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card[data-role="primary"].active .avatar {
-  box-shadow: 0 0 0 6px rgba(91, 141, 239, 0.55), 0 0 46px rgba(91, 141, 239, 0.3);
-}
-
-.card[data-role="reaction"].active .avatar {
-  box-shadow: 0 0 0 6px rgba(245, 165, 36, 0.55), 0 0 40px rgba(245, 165, 36, 0.3);
-}
-
-/* 아바타 위 추상 얼굴 (눈 2개 + 입) — 실사 얼굴 없이 최소한의 표정만 */
+/* 추상 얼굴 (눈 2개 + 입) — 실사 얼굴 없이 최소한의 표정만 */
 .avatar-face {
   position: absolute;
   inset: 0;
@@ -257,12 +279,6 @@ html, body {
   padding: 0 var(--safe-pad);
 }
 
-.grid-primary .avatar {
-  width: 320px;
-  height: 320px;
-  font-size: 64px;
-}
-
 .grid-primary .name {
   font-size: 32px;
 }
@@ -331,10 +347,8 @@ html, body {
   border-radius: 22px;
 }
 
-.grid-secondary .avatar {
-  width: 160px;
-  height: 160px;
-  font-size: 34px;
+.grid-secondary .avatar-circle {
+  width: 66%;
 }
 
 .grid-secondary .name {
