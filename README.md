@@ -77,11 +77,15 @@ serve.js         의존성 없는 로컬 정적 서버 (node serve.js)
   돌아옵니다(과한 줌/바운스 없음).
 - 활성화되는 동안 이미지 밝기가 살짝(`brightness(1.08)`) 올라갑니다. 확대/줌
   효과는 사용하지 않습니다.
-- 참가자에게 `reactionAvatarSrc`가 지정되어 있으면, 그 참가자가 활성화되는
-  동안만 0.15초 짧은 fade로 이미지를 바꿔 보여주고 비활성화 즉시 원래
-  `avatarSrc`로 되돌립니다 (현재는 엄지의 놀란 표정 전환에 사용). 이 로직은
-  `role`이 아니라 `reactionAvatarSrc` 필드 유무로만 동작하므로, background
-  참가자는애초에 활성화 자체가 되지 않아 영향받지 않습니다.
+- 참가자에게 `reactionAvatarSrc`가 지정되어 있고, **지금 활성화된 세그먼트에
+  `type: "reaction"`이 붙어 있을 때만** 짧은 fade(0.15초씩, 총 0.3초)로
+  이미지를 바꿔 보여주고, 그 세그먼트가 끝나면 즉시 원래 `avatarSrc`로
+  되돌립니다 (현재는 엄지의 "어?" 순간에만 놀란 표정을 씁니다). 판단 기준이
+  `role`이 아니라 **세그먼트 단위의 `type` 플래그**이므로, 엄지처럼
+  `role: "reaction"`인 참가자가 리액션 이후 긴 대사를 계속 이어가도(=계속
+  활성화 상태여도) 그 대사들에 `type`을 붙이지 않는 한 평소 표정
+  (`avatarSrc`)을 유지합니다. background 참가자는 애초에 활성화 자체가
+  되지 않으므로 이 로직과 무관합니다.
 
 ### 참가자 아바타 이미지
 
@@ -102,6 +106,20 @@ serve.js         의존성 없는 로컬 정적 서버 (node serve.js)
 파일이 없거나 로드에 실패해도 참가자 색상 원 + 벡터 얼굴로 자동 폴백되어
 전체 UI가 깨지지 않습니다.
 
+### 도입 상황 태그 / 자막 강조
+
+- `TEMPLATE.introTag = { text, duration }`을 지정하면 영상 시작 0~`duration`초
+  동안 자막 영역에 그 텍스트가 잠깐 뜹니다(예: "독서모임 중"). 대사가 아니라
+  상태 표시이므로 어떤 카드도 활성화되지 않고 TTS도 붙지 않습니다. 기존
+  자막 영역/스타일을 그대로 재사용하며, `dialogue[0].start`를 `duration`과
+  맞추면 태그가 사라지자마자 바로 첫 대사가 시작됩니다. 필요 없으면 필드
+  자체를 지우면 됩니다(기존처럼 dialogue가 0초부터 바로 시작).
+- `dialogue[].text` 안에서 `[대괄호]`로 감싼 부분만 기존 강조색(파란색/앰버색)
+  으로 표시됩니다. 나머지 글자는 그대로 흰색이며, 화면 한 장에 1군데만
+  쓰는 걸 권장합니다. 자막 색상 자체(파란색 vs 앰버색)는 `type`이 아니라
+  그 줄을 말하는 참가자의 `role`로 정해지므로, `role: "reaction"`인
+  참가자는 강조 여부와 무관하게 항상 앰버색 톤으로 보입니다.
+
 ### 정적(침묵) 처리
 
 별도의 "침묵" 데이터 항목이 없습니다. `dialogue`의 각 항목 `start` 값 사이에
@@ -113,7 +131,10 @@ serve.js         의존성 없는 로컬 정적 서버 (node serve.js)
 
 `src/data.js`의 `TEMPLATE.dialogue` 배열 하나로 전체 대화를 관리합니다.
 각 항목은 `{ speakerId, text, start, duration, type?, audio? }` 형태이며,
-이 배열만 교체하면 새로운 에피소드가 만들어집니다.
+이 배열만 교체하면 새로운 에피소드가 만들어집니다. `type: "reaction"`은
+그 세그먼트 동안만 참가자의 `reactionAvatarSrc`로 이미지를 바꾸라는
+표시이고(자막 색상과는 무관), `role: "reaction"`인 참가자가 리액션 이후
+계속 말을 이어가더라도 나머지 줄에는 붙일 필요가 없습니다.
 
 ### 러닝타임 제어 방식
 
@@ -126,14 +147,42 @@ totalDuration = endingStart + endingHold (엔딩 문구 유지 시간)
 ```
 
 `endingDelay`, `endingHold`도 `src/data.js`에 있는 값이라, 대사를 늘리거나
-줄이면 전체 러닝타임이 자동으로 재계산됩니다. 현재 데이터 기준 총 길이는
-약 23초입니다 (목표 20~25초 충족).
+줄이면 전체 러닝타임이 자동으로 재계산됩니다. `introTag`를 쓰는 경우 그
+`duration`만큼도 처음에 더해집니다. 현재 데이터(2편) 기준 총 길이는
+약 31.2초입니다 (목표 28~35초 충족) — 아래 "2편 타임라인" 참고.
+
+### 2편 타임라인 ("틀린 말은 아닌데 굳이 지금?")
+
+| 시간(초) | 화자 | 내용 |
+|---|---|---|
+| 0.0 – 1.0 | (상황 태그) | 「독서모임 중」 |
+| 1.0 – 5.0 | 민수 | 저는 이 장면에서 작가가 현대인의 외로움을 표현했다고 생각했어요. |
+| 5.0 – 7.2 | INTP | 근데 작가가 그렇게 [말했어요?] |
+| 7.2 – 9.0 | 민수 | 아뇨. 제 해석인데요. |
+| 9.0 – 11.6 | INTP | 그럼 작가가 [표현한 건 아니잖아요.] |
+| 11.6 – 11.9 | (정적 0.3초) | — |
+| 11.9 – 12.5 | 엄지 (reaction, umji-reaction.png) | 어? |
+| 12.5 – 13.2 | (정적 0.7초) | — |
+| 13.2 – 15.8 | 엄지 | 이래서 제가 INTP를 피합니다. |
+| 15.8 – 17.6 | 엄지 | 틀린 말은 아니거든요. |
+| 17.6 – 20.5 | 엄지 | 근데 [굳이 지금] 그걸 바로잡아야 하나? |
+| 20.5 – 23.1 | 엄지 | 본인은 진짜 아무 악의도 없어요. |
+| 23.1 – 24.7 | 엄지 | 심지어 [애는 착해.] |
+| 24.7 – 27.5 | 엄지 | 그래서 더 뭐라고 하기도 애매합니다. |
+| 27.5 – 28.2 | (정적 0.7초, `endingDelay`) | — |
+| 28.2 – 31.2 | (엔딩 문구, `endingHold` 3.0초) | 근데 애는 착함. |
+
+**총 러닝타임 31.2초** (목표 28~35초 충족). `dialogue[].duration`은 실제
+TTS 파일이 없어 "약 0.4초 + 글자당 0.12초" 어림값으로 추정했습니다(1편
+대사 중 텍스트가 동일한 줄은 1편에서 실측했던 값을 그대로 재사용). 실제
+음성을 붙이면 그 파일 길이에 맞춰 각 `duration`만 조정하면 됩니다.
 
 ## 내가 수정하기 쉬운 값 — 전부 `src/data.js` 안에 있습니다
 
 | 수정하고 싶은 값 | 위치 (`src/data.js`) |
 |---|---|
 | 모임 제목 / 부제 / 시작 통화시간 | `TEMPLATE.meetingTitle`, `meetingSubtitle`, `startClock` |
+| 도입 상황 태그 ("독서모임 중" 등) | `TEMPLATE.introTag.text`, 노출 시간은 `introTag.duration` |
 | 참가자 이름 | `TEMPLATE.participants[].name` |
 | 참가자 역할 (primary/reaction/background) | `TEMPLATE.participants[].role` |
 | 참가자 얼굴 이미지 | `TEMPLATE.participants[].avatarSrc` (파일은 `assets/avatars/`에 배치), 크롭 기준점은 `avatarPosition` |
@@ -143,7 +192,8 @@ totalDuration = endingStart + endingHold (엔딩 문구 유지 시간)
 | 대사 내용 | `TEMPLATE.dialogue[].text` |
 | 대사 시작 시간 | `TEMPLATE.dialogue[].start` (초 단위) |
 | 대사 길이 | `TEMPLATE.dialogue[].duration` (초 단위) |
-| 엄지 리액션 (탄성) | `TEMPLATE.dialogue[]`에서 `speakerId: "umji"`, `type: "reaction"`인 항목의 `text` |
+| 엄지 리액션 (탄성) | `TEMPLATE.dialogue[]`에서 `speakerId: "umji"`, `type: "reaction"`인 항목의 `text` (리액션 이미지 전환도 이 플래그로 결정) |
+| 자막 강조 단어 | `TEMPLATE.dialogue[].text` 안에서 강조하고 싶은 부분을 `[대괄호]`로 감싸기 |
 | 대사별 전용 음원 | `TEMPLATE.dialogue[].audio` (없으면 참가자 기본 `voice` 사용) |
 | 마지막 엔딩 문구 | `TEMPLATE.endingText` |
 | 엔딩 전 정적 길이 / 엔딩 유지 시간 | `TEMPLATE.endingDelay`, `TEMPLATE.endingHold` |

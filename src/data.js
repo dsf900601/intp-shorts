@@ -7,9 +7,16 @@
 
 const TEMPLATE = {
   // ── 상단 헤더 ──────────────────────────────────────────────────────────
-  meetingTitle: "📚 독서모임 #12",     // 헤더 최상단 큰 글씨
+  meetingTitle: "📖 독서모임 정기모임", // 헤더 최상단 큰 글씨 (현재 UI에서는 이 값만 노출됨)
   meetingSubtitle: "독서모임 정기모임", // (현재 UI에서는 title 한 줄만 노출, 필요 시 app.js에서 사용 가능)
   startClock: "21:37",                 // 화면 우하단 통화시간의 시작 값 (재생 경과 시간만큼 자동으로 올라감)
+
+  // ── 도입 상황 태그 (선택) ────────────────────────────────────────────────
+  // 영상 시작 직후 0~duration초 동안 자막 영역에 잠깐 뜨는 짧은 상태 표시.
+  // 대사가 아니므로 TTS로 읽지 않고, 어떤 참가자 카드도 활성화하지 않는다.
+  // duration이 끝나면 바로 dialogue[0]로 넘어가야 하므로, dialogue[0].start를
+  // 이 값과 같거나 아주 가깝게 맞춰서 "즉시 발화 시작"이 되도록 한다.
+  introTag: { text: "독서모임 중", duration: 1.0 },
 
   // ── 참가자 목록 ────────────────────────────────────────────────────────
   // role: "primary"(주 화자) | "reaction"(짧은 리액션만) | "background"(끝까지 발화 없음)
@@ -85,69 +92,101 @@ const TEMPLATE = {
     },
   ],
 
-  // ── 대화 데이터 ────────────────────────────────────────────────────────
+  // ── 대화 데이터 (2편: "틀린 말은 아닌데 굳이 지금?") ────────────────────
   // speakerId 는 위 participants[].id 와 일치해야 합니다.
   // start / duration 단위는 "초". 두 줄 사이에 의도적으로 시간차를 두면
   // 그 구간이 자동으로 "정적(모두 비활성)"으로 처리됩니다. (별도 silence 항목 불필요)
-  // type: "reaction" 을 붙이면 리액션 전용 자막 스타일이 적용됩니다.
+  // type: "reaction" 을 붙인 세그먼트에서만, 그 참가자의 reactionAvatarSrc가
+  // 있으면 그 순간만 이미지가 바뀝니다(예: 엄지의 "어?" 순간에만 놀란 표정).
+  // 자막의 강조 색상은 이 플래그가 아니라 참가자의 role로 자동 결정되므로
+  // (role: "reaction"이면 항상 앰버색), 같은 참가자가 이어서 긴 대사를 해도
+  // type을 반복해서 붙일 필요는 없습니다.
   // audio: 이 대사 전용 음원 파일 경로 (없으면 participant.voice 사용, 그것도 없으면 무음)
+  // text 안의 [대괄호]는 자막에서 강조색으로 표시됩니다 (화면당 1군데 권장).
+  // 실제 TTS 파일이 아직 없어 duration은 "약 0.4초 + 글자당 0.12초" 어림값으로
+  // 추정했습니다 — 실제 음성을 붙이면 그 길이에 맞춰 duration만 조정하면 됩니다.
   dialogue: [
     {
       speakerId: "minsu",
       text: "저는 이 장면에서 작가가 현대인의 외로움을 표현했다고 생각했어요.",
-      start: 0,
-      duration: 4.2,
+      start: 1.0, // introTag(0~1.0초) 종료 직후 바로 시작
+      duration: 4.0,
     },
     {
       speakerId: "intp",
-      text: "근데 작가가 그렇게 말했어요?",
-      start: 4.2,
+      text: "근데 작가가 그렇게\n[말했어요?]",
+      start: 5.0,
       duration: 2.2,
     },
+    // ↑ INTP의 첫 팩트체크가 5초 시점에 나와 "10초 안쪽 충돌 발생" 조건을 만족
     {
       speakerId: "minsu",
-      text: "아뇨. 그건 제 해석이죠.",
-      start: 6.4,
-      duration: 2.0,
-    },
-    {
-      speakerId: "intp",
-      text: "그럼 작가가 표현한 건 아니잖아요.",
-      start: 8.4,
-      duration: 2.7,
-    },
-    // ↑ 8.4~11.1초 발화 후, 다음 대사가 11.4초에 시작 → 0.3초 정적이 자동 발생
-    {
-      speakerId: "umji",
-      text: "어?",
-      start: 11.4,
-      duration: 0.6,
-      type: "reaction",
-      audio: "/audio/umji_reaction_01.wav",
-    },
-    {
-      speakerId: "intp",
-      text: "우리가 그렇게 해석한 거지.",
-      start: 12.1,
-      duration: 2.1,
-    },
-    {
-      speakerId: "minsu",
-      text: "뭐… 그렇긴 한데요.",
-      start: 14.2,
+      text: "아뇨.\n제 해석인데요.",
+      start: 7.2,
       duration: 1.8,
     },
     {
       speakerId: "intp",
-      text: "근데 왜 작가가 표현했다고 해요?",
-      start: 16.0,
+      text: "그럼 작가가\n[표현한 건 아니잖아요.]",
+      start: 9.0,
+      duration: 2.6,
+    },
+    // ↑ 11.6초에 발화 종료 후, 다음 대사가 11.9초에 시작 → 0.3초 정적(코믹한 텀)
+    {
+      speakerId: "umji",
+      text: "어?",
+      start: 11.9,
+      duration: 0.6,
+      type: "reaction",
+      audio: "/audio/umji_reaction_01.wav",
+    },
+    // ↑ "어?" 종료(12.5초) 후 다음 대사가 13.2초에 시작 → 0.7초 전원 정적.
+    // 이 정적이 끝나면 엄지의 표정은 umji.png(기본)로 돌아온 채로 말을 이어간다
+    // — "type: reaction"은 이 gasp 한 줄에만 붙여 놀란 표정 전환을 그 순간에만
+    // 한정하고, 아래 해설 대사들은 표시만 reaction 색상(엄지 role 기준 자동 적용)
+    // 이지 이미지 전환 대상은 아니다.
+    {
+      speakerId: "umji",
+      text: "이래서 제가 INTP를 피합니다.",
+      start: 13.2,
+      duration: 2.6,
+    },
+    {
+      speakerId: "umji",
+      text: "틀린 말은 아니거든요.",
+      start: 15.8,
+      duration: 1.8,
+    },
+    {
+      speakerId: "umji",
+      text: "근데 [굳이 지금]\n그걸 바로잡아야 하나?",
+      start: 17.6,
+      duration: 2.9,
+    },
+    {
+      speakerId: "umji",
+      text: "본인은 진짜 아무 악의도 없어요.",
+      start: 20.5,
+      duration: 2.6,
+    },
+    {
+      speakerId: "umji",
+      text: "심지어\n[애는 착해.]",
+      start: 23.1,
+      duration: 1.6,
+    },
+    {
+      speakerId: "umji",
+      text: "그래서 더 뭐라고 하기도 애매합니다.",
+      start: 24.7,
       duration: 2.8,
     },
-    // ↑ 마지막 대사 종료(18.8초) 이후 endingDelay(0.7초) 동안 전원 정적 → 엔딩 문구
+    // ↑ 마지막 대사 종료(27.5초) 이후 endingDelay(0.7초) 동안 전원 정적 → 엔딩 문구
+    // 총 러닝타임 = 27.5 + 0.7 + endingHold(3.0) = 31.2초 (목표 28~35초 충족)
   ],
 
   // ── 엔딩 ──────────────────────────────────────────────────────────────
   endingText: "근데 애는 착함.",
   endingDelay: 0.7,   // 마지막 대사가 끝난 뒤 엔딩 문구가 뜨기까지의 정적(초)
-  endingHold: 3.5,    // 엔딩 문구가 화면에 유지되는 시간(초) — 이후 처음부터 반복 재생
+  endingHold: 3.0,    // 엔딩 문구가 화면에 유지되는 시간(초) — 이후 처음부터 반복 재생
 };

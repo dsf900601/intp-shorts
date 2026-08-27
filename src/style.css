@@ -334,6 +334,17 @@ html, body {
   white-space: pre-wrap;
 }
 
+/* 대사 중 [강조 구간]만 기존 강조색(accent-primary/reaction)으로 표시.
+   한 줄에 1군데 정도만 사용 — src/data.js의 dialogue[].text에서
+   [대괄호]로 감싼 부분이 이 색으로 렌더링된다 (src/app.js renderSubtitleText). */
+.subtitle-emphasis {
+  color: var(--accent-primary);
+}
+
+.subtitle-area[data-type="reaction"] .subtitle-emphasis {
+  color: var(--accent-reaction);
+}
+
 /* ── 하단 secondary 3인 그리드 (엄지/지영/현우) ───────────────────────── */
 .grid-secondary {
   flex: 0 0 430px;
