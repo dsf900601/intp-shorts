@@ -50,14 +50,20 @@
     card.dataset.role = p.role;
 
     const hasImage = !!(p.avatar && p.avatar.image);
-    const avatarStyle = hasImage ? "" : `style="background:${p.avatar?.color || "#555"}"`;
+    const tint = p.avatar?.color || "#555";
+    // 이미지가 없으면 참가자 색상 원 + 추상 벡터 얼굴(눈 2개 + 입)로 표현.
+    // 실사 얼굴 대신 최소한의 표정만 주어 "빈 카드"처럼 보이지 않게 한다.
     const avatarInner = hasImage
       ? `<img src="${p.avatar.image}" alt="${p.name}" />`
-      : (p.avatar?.initial || p.name.charAt(0));
+      : `<div class="avatar-face">
+           <span class="af-eye af-eye--l"></span>
+           <span class="af-eye af-eye--r"></span>
+           <span class="af-mouth"></span>
+         </div>`;
 
     card.innerHTML = `
-      <div class="avatar" ${avatarStyle}>${avatarInner}</div>
-      <div class="name-row">
+      <div class="avatar" style="--tint:${tint}; background:${tint}">${avatarInner}</div>
+      <div class="name-badge">
         <span class="name">${p.name}</span>
         <div class="meter"><span></span><span></span><span></span><span></span></div>
       </div>

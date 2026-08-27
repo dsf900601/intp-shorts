@@ -20,13 +20,24 @@
         <!-- 상단 큰 카드 2개 (primary) -->
         <div class="grid-primary" id="gridPrimary"></div>
 
+        <!-- 현재 발화자 자막: 메인 2인 카드 아래 / 하단 3인 카드 위, 전용 영역 -->
+        <div class="subtitle-area" id="subtitleArea">
+          <div class="subtitle-card">
+            <div class="subtitle-speaker" id="subtitleSpeaker"></div>
+            <div class="subtitle-text" id="subtitleText"></div>
+          </div>
+        </div>
+
         <!-- 하단 작은 카드 3개 (reaction / background) -->
         <div class="grid-secondary" id="gridSecondary"></div>
 
-        <!-- 현재 발화자 자막 -->
-        <div class="subtitle-area" id="subtitleArea">
-          <div class="subtitle-speaker" id="subtitleSpeaker"></div>
-          <div class="subtitle-text" id="subtitleText"></div>
+        <!-- 가상 화상회의 하단 컨트롤 바 (장식용, 실제 기능 없음) -->
+        <div class="meeting-controls-bar" aria-hidden="true">
+          <span class="mc-icon">🎤</span>
+          <span class="mc-icon">📷</span>
+          <span class="mc-icon">👥</span>
+          <span class="mc-icon">💬</span>
+          <span class="mc-icon mc-icon--end">📞</span>
         </div>
 
         <!-- 엔딩 오버레이 -->
