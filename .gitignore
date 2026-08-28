@@ -1,0 +1,6 @@
+# render-assets.mjs가 렌더링 중에 만들었다 지우는 임시 파일 (사고로 남아도 무해)
+.render-asset.html
+.render-asset-data.js
+
+# 상태별 소스 영상 출력물 (용량이 커서 git에 커밋하지 않음)
+output/*.mp4
