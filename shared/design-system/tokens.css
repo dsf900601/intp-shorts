@@ -1,0 +1,57 @@
+/*
+  intp-shorts 디자인 토큰
+  ------------------------------------------------------------------
+  기존 숏츠 1~3편(업로드된 롱폼02_숏폼01/02/03.mp4)의 프레임을 픽셀 단위로
+  샘플링해서 추출한 값입니다. 새 디자인이 아니라 "기존 값을 코드로 고정"한
+  것이므로, 이후 숏츠(05, 06...)도 이 파일을 그대로 import 해서 재사용하세요.
+
+  추출 방법: ffmpeg로 각 영상에서 0.02~0.98 구간 프레임을 캡처한 뒤
+  Pillow로 주요 지점의 RGB를 샘플링. JPEG 압축으로 인한 ±3 정도의 오차가
+  있을 수 있어 사람이 읽기 좋은 값으로 반올림했습니다.
+*/
+:root {
+  /* stage: 원본 소스와 동일한 9:16 / 1080x1920 30fps */
+  --stage-w: 1080px;
+  --stage-h: 1920px;
+  --stage-fps: 30;
+
+  /* 색상 */
+  --color-bg: #ffffff;
+  --color-ink: #141414;           /* 제목/본문 기본 텍스트 */
+  --color-ink-soft: #2b2b2b;      /* 본문 일반 문장(살짝 연함) */
+  --color-meta: #9b9b9b;          /* 작성자/시간/조회수, 댓글 좋아요 숫자 */
+  --color-icon: #6e6e6e;          /* 상단바 화살표/케밥 아이콘 */
+  --color-divider: #eaeaea;       /* 제목 아래 구분선, 댓글 사이 구분선 */
+  --color-highlight-yellow-bg: #fdf3ae;   /* 인용구/핵심 문장 형광펜 배경 */
+  --color-highlight-peach-bg: #fbd9c6;    /* 키워드 강조 배경(레드 텍스트 뒤) */
+  --color-accent-red: #e3492b;    /* 키워드 강조 텍스트 색 */
+  --color-comment-avatar-bg: #ececec;
+  --color-comment-avatar-icon: #b9b9b9;
+  --color-comment-border: #f0f0f0;
+
+  /* 폰트: Pretendard 우선, 없으면 시스템 한글 산세리프로 폴백 */
+  --font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic',
+    -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* 타이포 스케일 (1080px 폭 기준 px, 실제 소스와 1:1) */
+  --fs-topbar: 34px;
+  --fs-title: 54px;
+  --fs-meta: 30px;
+  --fs-body: 46px;
+  --fs-highlight: 50px;
+  --fs-comment-header: 40px;
+  --fs-comment-meta: 30px;
+  --fs-comment-body: 38px;
+
+  --lh-body: 1.5;
+  --lh-title: 1.25;
+
+  /* 레이아웃 여백: 좌우 넓은 회색 여백 금지 -> 거의 풀블리드 + 균일한 안전 여백만 사용 */
+  --pad-x: 56px;
+  --pad-top: 40px;
+
+  /* 전환: 과도한 줌/번쩍임/흔들림 금지 -> opacity/translateY 페이드만 사용 */
+  --ease-standard: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-reveal: 320ms;
+  --dur-highlight-sweep: 420ms;
+}

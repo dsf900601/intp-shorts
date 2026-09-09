@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>롱폼02_숏폼04</title>
+<link rel="stylesheet" href="../../shared/design-system/tokens.css" />
+<link rel="stylesheet" href="../../shared/design-system/post-ui.css" />
+<style>
+  /* 프리뷰 전용(캡처에는 영향 없음): 브라우저 창 중앙에 스테이지 보여주기 */
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #111; }
+  #stage { box-shadow: 0 0 40px rgba(0,0,0,.5); }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <div id="track"></div>
+  </div>
+
+  <!-- 실제 내레이션 오디오가 audio/ 폴더에 준비되면 src를 채우세요.
+       파일이 없으면 자동으로 클럭 기반 프리뷰 재생으로 대체됩니다. -->
+  <audio id="voice" src="./audio/롱폼02_숏폼04.mp3" preload="auto"></audio>
+
+  <script src="../../shared/design-system/post-ui.js"></script>
+  <script>
+    async function boot() {
+      const res = await fetch("./timeline.json");
+      const timeline = await res.json();
+
+      const stage = document.getElementById("stage");
+      const track = document.getElementById("track");
+      const audio = document.getElementById("voice");
+
+      const player = new IntpShorts.ShortPlayer({ stage, track, timeline, audio });
+      window.__player = player;
+      window.__seek = (t) => player.seek(t);
+      window.__totalDuration = player.totalDuration();
+
+      // capture.mjs가 window.__CAPTURE__ = true 를 주입하면 자동재생하지 않는다.
+      if (!window.__CAPTURE__) {
+        player.renderAtTime(0);
+        // 사용자가 클릭하면 미리보기 재생 시작(오디오 자동재생 정책 우회)
+        document.body.addEventListener("click", () => player.play(), { once: true });
+      }
+    }
+    boot();
+  </script>
+</body>
+</html>

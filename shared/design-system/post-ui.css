@@ -1,0 +1,200 @@
+/*
+  intp-shorts 공용 컴포넌트 스타일
+  기존 숏츠 1~3편의 "커뮤니티 글 스크롤" 포맷을 그대로 구현합니다.
+  - 상단바(‹ INTP 게시판 ⋮) + 제목/메타 카드
+  - 문단 순차 등장(스크롤)
+  - 노란 형광펜 인용구 박스
+  - 굵게 확대되는 강조 문장
+  - 레드+피치 키워드 강조
+  - 댓글 카드 UI
+  새 디자인을 추가하지 말고, 이 파일의 클래스만 사용해서 각 숏츠를 조립하세요.
+*/
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+}
+
+#stage {
+  position: relative;
+  width: var(--stage-w);
+  height: var(--stage-h);
+  overflow: hidden;
+  background: var(--color-bg);
+  font-family: var(--font-family);
+  color: var(--color-ink);
+}
+
+/* 스크롤되는 콘텐츠 트랙. #stage는 뷰포트, #track이 위로 이동하며
+   "글을 스크롤해서 읽는" 등장 방식을 재현한다. */
+#track {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  padding: var(--pad-top) var(--pad-x) 0;
+  will-change: transform;
+}
+
+/* ---------- 상단바 (INTP 게시판) ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 22px;
+  color: var(--color-icon);
+  font-weight: 700;
+  font-size: var(--fs-topbar);
+}
+.topbar .back { color: var(--color-icon); font-weight: 400; margin-right: 14px; }
+.topbar .board-name { color: var(--color-ink); }
+.topbar .kebab { color: var(--color-icon); letter-spacing: 2px; }
+
+/* ---------- 제목 카드 (title / meta) ---------- */
+.title-card { padding-bottom: 18px; }
+.title-card .headline {
+  font-weight: 800;
+  font-size: var(--fs-title);
+  line-height: var(--lh-title);
+  color: var(--color-ink);
+  margin: 0 0 18px;
+}
+.title-card .meta {
+  font-size: var(--fs-meta);
+  color: var(--color-meta);
+}
+.title-card .meta span { margin: 0 10px; }
+.title-card .meta span:first-child { margin-left: 0; }
+.divider {
+  border: none;
+  border-top: 2px solid var(--color-divider);
+  margin: 18px 0 34px;
+}
+
+/* ---------- 첫 화면 훅 문구 (제목카드 대신 바로 노출) ---------- */
+.hook {
+  padding-top: 4vh;
+}
+.hook .line {
+  font-weight: 800;
+  font-size: 68px;
+  line-height: 1.32;
+  color: var(--color-ink);
+  margin: 0 0 8px;
+}
+
+/* ---------- 본문 문단 ---------- */
+.block { margin: 0 0 44px; }
+.para p {
+  font-weight: 500;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-ink-soft);
+  margin: 0 0 6px;
+}
+
+/* 노란 형광펜 인용구 박스 */
+.quote {
+  display: block;
+  font-weight: 800;
+  font-size: var(--fs-highlight);
+  line-height: 1.5;
+  color: var(--color-ink);
+  background: var(--color-highlight-yellow-bg);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 4px 2px;
+}
+
+/* 확대된 굵은 강조 문장 (박스 없음) */
+.bold-emphasis {
+  font-weight: 800;
+  font-size: var(--fs-highlight);
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+/* 레드 키워드 + 피치 하이라이트 강조 */
+.final-line {
+  font-weight: 800;
+  font-size: var(--fs-highlight);
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+.final-line .keyword {
+  color: var(--color-accent-red);
+  background: var(--color-highlight-peach-bg);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 4px 2px;
+}
+
+/* ---------- 댓글 섹션 ---------- */
+.comments-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-weight: 800;
+  font-size: var(--fs-comment-header);
+  color: var(--color-ink);
+  padding-top: 10px;
+  padding-bottom: 24px;
+  border-top: 2px solid var(--color-divider);
+  margin-top: 10px;
+}
+.comments-head .bubble-icon { font-size: 36px; }
+
+.comment {
+  display: flex;
+  gap: 18px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-comment-border);
+}
+.comment .avatar {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-comment-avatar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-comment-avatar-icon);
+  font-size: 30px;
+}
+.comment .body { flex: 1; min-width: 0; }
+.comment .row1 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: var(--fs-comment-meta);
+  color: var(--color-meta);
+  margin-bottom: 10px;
+}
+.comment .row1 .author { color: var(--color-meta); font-weight: 700; }
+.comment .row1 .like { color: var(--color-meta); }
+.comment .text {
+  font-size: var(--fs-comment-body);
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+  font-weight: 500;
+}
+
+/* ---------- 등장 애니메이션: opacity + 살짝 translateY만 사용.
+   과도한 줌/번쩍임/흔들림 금지. ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--dur-reveal) var(--ease-standard),
+              transform var(--dur-reveal) var(--ease-standard);
+}
+.highlight-sweep {
+  transition: background-size var(--dur-highlight-sweep) var(--ease-standard);
+}

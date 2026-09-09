@@ -1,0 +1,167 @@
+{
+  "id": "롱폼02_숏폼04",
+  "title": "INTP가 우연히 잘된 일을 그냥 못 넘기는 이유",
+  "source": "롱폼 02",
+  "note": "duration 값은 audio/롱폼02_숏폼04.wav(espeak-ng 임시 TTS 플레이스홀더 보이스)에 맞춰 자동 동기화되어 있습니다. 실제 롱폼02 음성으로 교체하려면 그 파일을 실제 음성으로 덮어쓴 뒤 `node scripts/fit-timeline-to-audio.mjs`를 실행하세요.",
+  "targetDurationSec": [
+    30,
+    35
+  ],
+  "cues": [
+    {
+      "id": "hook",
+      "type": "hook",
+      "duration": 3.84,
+      "lines": [
+        "본인 INTP인데",
+        "우연히 잘되면 원인부터 찾음"
+      ],
+      "voiceover": "본인 INTP인데 / 뭐가 우연히 잘되면 / 좋아하기보다 원인부터 찾음.",
+      "note": "첫 화면. 제목카드/로고 없이 바로 이 문구가 화면 주요 면적을 차지함. 음성은 축약 없이 원본 3줄을 그대로 읽음."
+    },
+    {
+      "id": "p1",
+      "type": "para",
+      "duration": 1.632,
+      "lines": [
+        "농구를 처음 시작했을 때"
+      ]
+    },
+    {
+      "id": "p2",
+      "type": "para",
+      "duration": 1.418,
+      "lines": [
+        "나는 진짜 못했거든."
+      ]
+    },
+    {
+      "id": "p3",
+      "type": "para",
+      "duration": 0.893,
+      "lines": [
+        "그런데 어느 날"
+      ]
+    },
+    {
+      "id": "p4",
+      "type": "para",
+      "duration": 2.241,
+      "lines": [
+        "이상하게 나한테 패스가 계속 오는 거임."
+      ]
+    },
+    {
+      "id": "p5",
+      "type": "para",
+      "duration": 1.788,
+      "lines": [
+        "평소에는 이런 적이 없었으니까"
+      ]
+    },
+    {
+      "id": "p6",
+      "type": "para",
+      "duration": 1.506,
+      "lines": [
+        "갑자기 궁금해졌음."
+      ]
+    },
+    {
+      "id": "hl1",
+      "type": "quote",
+      "duration": 2.06,
+      "text": "“왜 오늘은 나한테 공이 자꾸 오지?”",
+      "note": "강조1 — 기존 숏츠의 노란 형광펜 인용구 박스 그대로 사용"
+    },
+    {
+      "id": "p7",
+      "type": "para",
+      "duration": 1.988,
+      "lines": [
+        "그냥 운이 좋았다고 넘기면 되는데"
+      ]
+    },
+    {
+      "id": "p8",
+      "type": "para",
+      "duration": 1.5,
+      "lines": [
+        "내가 어떻게 움직였는지"
+      ]
+    },
+    {
+      "id": "p9",
+      "type": "para",
+      "duration": 1.487,
+      "lines": [
+        "계속 복기하기 시작함."
+      ]
+    },
+    {
+      "id": "p10",
+      "type": "para",
+      "duration": 2.08,
+      "lines": [
+        "평소와 달랐던 동선을 찾아보고"
+      ]
+    },
+    {
+      "id": "p11",
+      "type": "para",
+      "duration": 1.575,
+      "lines": [
+        "그대로 다시 움직여봤는데"
+      ]
+    },
+    {
+      "id": "hl2",
+      "type": "bold",
+      "duration": 1.861,
+      "text": "진짜로 패스가 또 왔음.",
+      "note": "강조2 — 확대된 굵은 문장으로 전환(줌/흔들림 없이 페이드만)"
+    },
+    {
+      "id": "p12",
+      "type": "para",
+      "duration": 1.122,
+      "lines": [
+        "그날부터 농구가"
+      ]
+    },
+    {
+      "id": "hl3",
+      "type": "final",
+      "duration": 2.447,
+      "prefix": "",
+      "keyword": "연구 대상",
+      "suffix": "이 됐음.",
+      "fullText": "운동이 아니라 연구 대상이 됐음.",
+      "note": "강조3 & 마지막 화면 — '연구 대상'만 레드+피치 하이라이트. 다음 줄(그날부터 농구가)과 함께 충분히 읽히도록 hold를 가장 길게 둠."
+    },
+    {
+      "id": "c1",
+      "type": "comment",
+      "duration": 1.9,
+      "author": "○○",
+      "likes": 289,
+      "text": "운 좋았네 하고 끝내면 되는데 원인 분석부터 들어감ㅋㅋ"
+    },
+    {
+      "id": "c2",
+      "type": "comment",
+      "duration": 1.7,
+      "author": "○○",
+      "likes": 204,
+      "text": "어쩌다 한 번 성공하면 재현될 때까지 계속 해보는 편"
+    },
+    {
+      "id": "c3",
+      "type": "comment",
+      "duration": 1.9,
+      "author": "○○",
+      "likes": 167,
+      "text": "INTP한테 우연은 그냥 아직 원인을 모르는 결과임"
+    }
+  ]
+}
