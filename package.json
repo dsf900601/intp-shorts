@@ -1,0 +1,13 @@
+{
+  "name": "intp-shorts",
+  "private": true,
+  "version": "0.1.0",
+  "description": "INTP 농구 시리즈 숏츠 제작 프로젝트 (공용 디자인 시스템 + 숏폼별 타임라인/렌더 코드)",
+  "type": "module",
+  "scripts": {
+    "render:롱폼02_숏폼04": "cd shorts/롱폼02_숏폼04 && ./render/render.sh"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}

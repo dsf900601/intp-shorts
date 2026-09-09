@@ -1,0 +1,7 @@
+node_modules/
+shorts/*/output/frames/
+shorts/*/output/*.mp4
+shorts/*/audio/*.mp3
+shorts/*/audio/*.wav
+!shorts/*/audio/README.md
+.DS_Store
