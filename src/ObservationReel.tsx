@@ -1,18 +1,18 @@
 import React from "react";
 import { Audio, Series, staticFile } from "remotion";
-import { CharacterPose, EpisodeData } from "./content/types";
+import { EpisodeData } from "./content/types";
 import { ObservationScene } from "./scenes/ObservationScene";
 
 /**
  * The single reusable engine for every "인치디 관찰일지" reel.
  * A new episode = a new file in src/content/ with the same shape as
- * observation-001.ts. Nothing in this component is episode-specific.
+ * observation-001.ts (its own feed source images + scene crops). Nothing
+ * in this component is episode-specific.
  */
 export const ObservationReel: React.FC<{
   episodeData: EpisodeData;
   hasAudio: boolean;
-  availablePoses: Record<CharacterPose, boolean>;
-}> = ({ episodeData, hasAudio, availablePoses }) => {
+}> = ({ episodeData, hasAudio }) => {
   return (
     <>
       {hasAudio && episodeData.audio ? (
@@ -20,14 +20,9 @@ export const ObservationReel: React.FC<{
       ) : null}
 
       <Series>
-        {episodeData.scenes.map((scene) => (
+        {episodeData.scenes.map((scene, i) => (
           <Series.Sequence key={scene.id} durationInFrames={scene.duration}>
-            <ObservationScene
-              scene={scene}
-              series={episodeData.series}
-              episode={episodeData.episode}
-              availablePoses={availablePoses}
-            />
+            <ObservationScene scene={scene} episodeData={episodeData} showLabel={i === 0} />
           </Series.Sequence>
         ))}
       </Series>
