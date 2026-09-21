@@ -1,0 +1,23 @@
+{
+  "name": "intp-shorts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "인치디 관찰일지 - Instagram Reels rendering system built with Remotion",
+  "scripts": {
+    "start": "remotion studio",
+    "render": "remotion render ObservationReel out/reel-001.mp4",
+    "still": "remotion still ObservationReel out/reel-001-frame.png --frame=450",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.290",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.290",
+    "roughjs": "^4.6.6"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.5",
+    "typescript": "5.5.4"
+  }
+}
