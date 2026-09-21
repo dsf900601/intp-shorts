@@ -7,17 +7,20 @@ import { PlayerMarker } from "../components/PlayerMarker";
 import { QuestionMark } from "../components/QuestionMark";
 import { Arrow } from "../components/Arrow";
 import { theme } from "../theme";
-import { SceneVisual as SceneVisualData } from "../content/types";
+import { CharacterPose, SceneVisual as SceneVisualData } from "../content/types";
 
 /**
- * Renders the illustration for a scene based on its `visual.kind`.
- * This is the single place new visual kinds get added — episode content
- * files only ever pick a `kind` + light params, never touch this logic.
+ * Renders the illustration for a scene based on its `visual.kind`. This is
+ * the single place new visual kinds get added - episode content files only
+ * ever pick a `kind` + a `pose` + light params, never touch this logic.
+ * Text is handled separately by ObservationScene; this only draws the
+ * character + situation art that fills the middle region of the frame.
  */
 export const SceneVisual: React.FC<{
   visual: SceneVisualData;
   durationInFrames: number;
-}> = ({ visual, durationInFrames }) => {
+  availablePoses: Record<CharacterPose, boolean>;
+}> = ({ visual, durationInFrames, availablePoses }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -30,7 +33,7 @@ export const SceneVisual: React.FC<{
     const pop = spring({ frame, fps, config: { damping: 200, mass: 0.7 } });
     return (
       <div style={{ transform: `scale(${scale * pop})`, opacity: pop }}>
-        <Character width={300} />
+        <Character pose={visual.pose} available={availablePoses[visual.pose]} width={480} />
       </div>
     );
   }
@@ -41,19 +44,19 @@ export const SceneVisual: React.FC<{
       fps,
       config: { damping: 200, mass: 0.8, stiffness: 90 },
     });
-    const rollOffset = visual.ballRollIn ? (1 - ballEnter) * -140 : 0;
+    const rollOffset = visual.ballRollIn ? (1 - ballEnter) * -160 : 0;
     const rotate = visual.ballRollIn ? (1 - ballEnter) * -220 : 0;
     return (
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 18 }}>
-        <Character width={280} />
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 24 }}>
+        <Character pose={visual.pose} available={availablePoses[visual.pose]} width={440} />
         <div
           style={{
             transform: `translateX(${rollOffset}px) rotate(${rotate}deg)`,
             opacity: visual.ballRollIn ? ballEnter : 1,
-            marginBottom: 30,
+            marginBottom: 46,
           }}
         >
-          <Basketball size={96} />
+          <Basketball size={128} />
         </div>
       </div>
     );
@@ -64,31 +67,31 @@ export const SceneVisual: React.FC<{
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
     });
-    const opponentX = 140;
-    const opponentY = 90;
-    const selfX = 620;
-    const selfY = 360;
+    const opponentX = 150;
+    const opponentY = 95;
+    const selfX = 660;
+    const selfY = 380;
     const ballX = opponentX + (selfX - opponentX) * travel;
     const ballY = opponentY + (selfY - opponentY) * travel;
 
     return (
-      <div style={{ position: "relative", width: 820, height: 820 * 0.62 }}>
-        <Court width={820} />
+      <div style={{ position: "relative", width: 880, height: 880 * 0.62 }}>
+        <Court width={880} />
         <div style={{ position: "absolute", left: opponentX - 17, top: opponentY - 17 }}>
           <PlayerMarker size={34} />
         </div>
-        <div style={{ position: "absolute", left: selfX - 19, top: selfY - 19 }}>
-          <PlayerMarker size={38} highlight />
+        <div style={{ position: "absolute", left: selfX - 21, top: selfY - 21 }}>
+          <PlayerMarker size={42} highlight />
         </div>
         <div
           style={{
             position: "absolute",
-            left: ballX - 22,
-            top: ballY - 22,
+            left: ballX - 24,
+            top: ballY - 24,
             transform: `rotate(${travel * 260}deg)`,
           }}
         >
-          <Basketball size={44} />
+          <Basketball size={48} />
         </div>
       </div>
     );
@@ -96,14 +99,15 @@ export const SceneVisual: React.FC<{
 
   if (visual.kind === "questionMarks") {
     const positions = [
-      { x: -150, y: -60, delay: 0 },
-      { x: 150, y: -30, delay: 8 },
-      { x: 0, y: -170, delay: 16 },
+      { x: -190, y: -40, delay: 0 },
+      { x: 190, y: 0, delay: 8 },
+      { x: 0, y: -220, delay: 16 },
     ];
     return (
-      <div style={{ position: "relative", width: 320, height: 340 }}>
-        <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }}>
-          <Character width={230} tired />
+      <div style={{ position: "relative", width: 480, height: 520, display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 14 }}>
+        <Character pose={visual.pose} available={availablePoses[visual.pose]} width={400} />
+        <div style={{ marginBottom: 30 }}>
+          <Basketball size={90} />
         </div>
         {positions.slice(0, visual.count).map((p, i) => {
           const pop = spring({
@@ -122,7 +126,7 @@ export const SceneVisual: React.FC<{
                 opacity: pop,
               }}
             >
-              <QuestionMark size={54} />
+              <QuestionMark size={72} />
             </div>
           );
         })}
@@ -133,39 +137,42 @@ export const SceneVisual: React.FC<{
   if (visual.kind === "sequentialList") {
     const perItem = Math.floor(durationInFrames / visual.items.length);
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-        {visual.items.map((item, i) => {
-          const localFrame = frame - i * perItem;
-          const reveal = spring({
-            frame: localFrame,
-            fps,
-            config: { damping: 200, mass: 0.6, stiffness: 120 },
-          });
-          return (
-            <React.Fragment key={item}>
-              {i > 0 ? (
-                <div style={{ opacity: reveal }}>
-                  <Arrow seed={60 + i} />
+      <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
+        <Character pose={visual.pose} available={availablePoses[visual.pose]} width={340} />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
+          {visual.items.map((item, i) => {
+            const localFrame = frame - i * perItem;
+            const reveal = spring({
+              frame: localFrame,
+              fps,
+              config: { damping: 200, mass: 0.6, stiffness: 120 },
+            });
+            return (
+              <React.Fragment key={item}>
+                {i > 0 ? (
+                  <div style={{ opacity: reveal, marginLeft: 20 }}>
+                    <Arrow seed={60 + i} width={34} height={46} />
+                  </div>
+                ) : null}
+                <div
+                  style={{
+                    fontFamily: theme.font.family,
+                    fontSize: 52,
+                    fontWeight: 700,
+                    color: theme.colors.ink,
+                    opacity: reveal,
+                    transform: `translateY(${(1 - reveal) * 16}px)`,
+                    background: i > 0 ? theme.colors.accentSoft : "transparent",
+                    padding: i > 0 ? "8px 26px" : 0,
+                    borderRadius: 8,
+                  }}
+                >
+                  {item}
                 </div>
-              ) : null}
-              <div
-                style={{
-                  fontFamily: theme.font.family,
-                  fontSize: 46,
-                  fontWeight: 700,
-                  color: theme.colors.ink,
-                  opacity: reveal,
-                  transform: `translateY(${(1 - reveal) * 16}px)`,
-                  background: i > 0 ? theme.colors.accentSoft : "transparent",
-                  padding: i > 0 ? "6px 22px" : 0,
-                  borderRadius: 8,
-                }}
-              >
-                {item}
-              </div>
-            </React.Fragment>
-          );
-        })}
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
     );
   }
@@ -173,44 +180,47 @@ export const SceneVisual: React.FC<{
   if (visual.kind === "questionChain") {
     const perItem = Math.floor(durationInFrames / visual.items.length);
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
-        {visual.items.map((item, i) => {
-          const localFrame = frame - i * perItem;
-          const pop = spring({
-            frame: localFrame,
-            fps,
-            config: { damping: 11, mass: 0.5, stiffness: 150 },
-          });
-          const size = 40 + i * 14;
-          return (
-            <React.Fragment key={`${item}-${i}`}>
-              {i > 0 ? (
-                <span
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28 }}>
+        <Character pose={visual.pose} available={availablePoses[visual.pose]} width={360} />
+        <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
+          {visual.items.map((item, i) => {
+            const localFrame = frame - i * perItem;
+            const pop = spring({
+              frame: localFrame,
+              fps,
+              config: { damping: 11, mass: 0.5, stiffness: 150 },
+            });
+            const size = 44 + i * 16;
+            return (
+              <React.Fragment key={`${item}-${i}`}>
+                {i > 0 ? (
+                  <span
+                    style={{
+                      fontFamily: theme.font.family,
+                      fontSize: 38,
+                      color: theme.colors.inkSoft,
+                      opacity: pop,
+                    }}
+                  >
+                    →
+                  </span>
+                ) : null}
+                <div
                   style={{
                     fontFamily: theme.font.family,
-                    fontSize: 34,
-                    color: theme.colors.inkSoft,
+                    fontSize: size,
+                    fontWeight: 700,
+                    color: theme.colors.ink,
+                    transform: `scale(${pop}) rotate(${i % 2 === 0 ? -3 : 3}deg)`,
                     opacity: pop,
                   }}
                 >
-                  →
-                </span>
-              ) : null}
-              <div
-                style={{
-                  fontFamily: theme.font.family,
-                  fontSize: size,
-                  fontWeight: 700,
-                  color: theme.colors.ink,
-                  transform: `scale(${pop}) rotate(${i % 2 === 0 ? -3 : 3}deg)`,
-                  opacity: pop,
-                }}
-              >
-                {item}
-              </div>
-            </React.Fragment>
-          );
-        })}
+                  {item}
+                </div>
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
     );
   }

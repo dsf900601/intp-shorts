@@ -41,8 +41,15 @@ src/
     PaperBackground.tsx, SceneFrame.tsx, RoughShape.tsx, sketch.ts
 public/
   audio/                    내레이션 wav 위치 (없어도 렌더링됨, README 참고)
+  characters/               캐릭터 PNG 에셋 슬롯 (pose별, 없어도 렌더링됨, README 참고)
   fonts/                    self-host된 Gaegu 폰트 파일
 ```
+
+캐릭터는 코드로 그리지 않는다. `Character.tsx`는 `pose`(예: `thinking`,
+`basketball`, `curious`, `analyzing`, `realization`)에 맞는
+`public/characters/<pose>.png`를 불러오는 에셋 슬롯이며, 파일이 없으면
+점선 placeholder를 대신 보여준다. 기존 인스타그램 피드의 실제 캐릭터 아트를
+그대로 이 파일명으로 내보내면 코드 수정 없이 반영된다 (`public/characters/README.md` 참고).
 
 ## 다음 에피소드(#002, #003...) 만들 때
 
@@ -55,5 +62,7 @@ public/
    폰트 서브셋을 다시 받는다.
 4. 실제 음성이 생기면 `public/audio/reel-XXX.wav`에 넣기만 하면 된다
    (코드 수정 불필요, `calculateMetadata`가 자동 감지).
+5. 새 pose가 필요하면 `CharacterPose`(`src/content/types.ts`)에 이름을 추가하고
+   `public/characters/<pose>.png`를 넣는다.
 
 컴포넌트(`components/`, `scenes/`)는 에피소드마다 복사하지 않는다 — 데이터만 바뀐다.

@@ -1,10 +1,24 @@
+// Pose names map 1:1 to public/characters/<pose>.png asset slots.
+// Add a new pose here + drop in the matching PNG to use it in content data.
+export type CharacterPose =
+  | "thinking"
+  | "basketball"
+  | "curious"
+  | "analyzing"
+  | "realization";
+
 export type SceneVisual =
-  | { kind: "character"; pushIn?: boolean }
-  | { kind: "characterWithBall"; ballRollIn?: boolean; holdStill?: boolean }
+  | { kind: "character"; pose: CharacterPose; pushIn?: boolean }
+  | {
+      kind: "characterWithBall";
+      pose: CharacterPose;
+      ballRollIn?: boolean;
+      holdStill?: boolean;
+    }
   | { kind: "court"; ballTravel?: boolean }
-  | { kind: "questionMarks"; count: number }
-  | { kind: "sequentialList"; items: string[] }
-  | { kind: "questionChain"; items: string[] };
+  | { kind: "questionMarks"; pose: CharacterPose; count: number }
+  | { kind: "sequentialList"; pose: CharacterPose; items: string[] }
+  | { kind: "questionChain"; pose: CharacterPose; items: string[] };
 
 export interface Scene {
   id: string;

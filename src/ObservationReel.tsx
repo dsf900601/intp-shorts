@@ -1,6 +1,6 @@
 import React from "react";
 import { Audio, Series, staticFile } from "remotion";
-import { EpisodeData } from "./content/types";
+import { CharacterPose, EpisodeData } from "./content/types";
 import { ObservationScene } from "./scenes/ObservationScene";
 
 /**
@@ -11,7 +11,8 @@ import { ObservationScene } from "./scenes/ObservationScene";
 export const ObservationReel: React.FC<{
   episodeData: EpisodeData;
   hasAudio: boolean;
-}> = ({ episodeData, hasAudio }) => {
+  availablePoses: Record<CharacterPose, boolean>;
+}> = ({ episodeData, hasAudio, availablePoses }) => {
   return (
     <>
       {hasAudio && episodeData.audio ? (
@@ -25,6 +26,7 @@ export const ObservationReel: React.FC<{
               scene={scene}
               series={episodeData.series}
               episode={episodeData.episode}
+              availablePoses={availablePoses}
             />
           </Series.Sequence>
         ))}

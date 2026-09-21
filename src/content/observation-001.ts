@@ -15,7 +15,7 @@ export const observation001: EpisodeData = {
       type: "intro",
       duration: 90, // 0:00 - 0:03
       text: ["나는 좋아하는 걸", "깊게 파는 사람인 줄 알았다."],
-      visual: { kind: "character", pushIn: true },
+      visual: { kind: "character", pose: "thinking", pushIn: true },
       showEpisodeLabel: true,
     },
     {
@@ -24,13 +24,13 @@ export const observation001: EpisodeData = {
       duration: 90, // 0:03 - 0:06
       text: ["근데 농구는", "좋아해서 시작한 게 아니었다."],
       subtext: "다이어트하려고 시작함.",
-      visual: { kind: "characterWithBall", ballRollIn: true },
+      visual: { kind: "characterWithBall", pose: "basketball", ballRollIn: true },
     },
     {
       id: "scene-3-context",
       type: "context",
       duration: 120, // 0:06 - 0:10
-      text: ["그러다 어느 날", "이상하게 나한테 패스가 계속 왔다."],
+      text: ["그러다 어느 날", "이상하게 나한테", "패스가 계속 왔다."],
       visual: { kind: "court", ballTravel: true },
     },
     {
@@ -39,7 +39,7 @@ export const observation001: EpisodeData = {
       duration: 90, // 0:10 - 0:13
       text: ["왜 오늘은 나한테", "공이 자꾸 오지?"],
       emphasis: "large",
-      visual: { kind: "questionMarks", count: 3 },
+      visual: { kind: "questionMarks", pose: "curious", count: 3 },
     },
     {
       id: "scene-5-analysis",
@@ -48,6 +48,7 @@ export const observation001: EpisodeData = {
       text: ["그때부터 일이 커졌다."],
       visual: {
         kind: "sequentialList",
+        pose: "analyzing",
         items: ["내 동선", "수비 움직임", "빈자리", "패스"],
       },
     },
@@ -56,7 +57,7 @@ export const observation001: EpisodeData = {
       type: "escalation",
       duration: 90, // 0:18 - 0:21
       text: ["하나를 이해하니까", "그다음이 궁금해졌다."],
-      visual: { kind: "questionChain", items: ["WHY?", "?", "?"] },
+      visual: { kind: "questionChain", pose: "curious", items: ["WHY?", "?", "?"] },
     },
     {
       id: "scene-7-conclusion",
@@ -66,9 +67,10 @@ export const observation001: EpisodeData = {
       emphasisText: [
         "나는 좋아하는 걸 파는 게 아니라",
         "이해하고 싶은 걸",
-        "좋아하게 되는 사람이었다.",
+        "좋아하게 되는",
+        "사람이었다.",
       ],
-      visual: { kind: "characterWithBall", holdStill: true },
+      visual: { kind: "characterWithBall", pose: "realization", holdStill: true },
       showEpisodeLabel: true,
     },
   ],
