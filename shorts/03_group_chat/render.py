@@ -1,6 +1,6 @@
 """3순위 숏츠 — 「사람이 더 많은데 왜 더 편하지?」 (역설형)
 
-1080x1920 / 30fps / 약 42초 세로 영상을 렌더링한다.
+1080x1920 / 30fps / 약 44초 세로 영상을 렌더링한다.
 의존성: Pillow, numpy, ffmpeg (PATH)
 
     python3 shorts/03_group_chat/render.py
@@ -19,7 +19,7 @@ FONT_DIR = os.path.join(ROOT, "assets", "fonts")
 OUT_DIR = os.path.join(HERE, "out")
 
 W, H, FPS = 1080, 1920, 30
-DURATION = 42.0
+DURATION = 44.0
 SR = 44100
 
 # ---------------------------------------------------------------- palette
@@ -465,23 +465,32 @@ def scene_twist(img, t):  # 28.6 – 34.6
 
 
 # ---------------------------------------------------------------- scene 6: 결론
-def scene_end(img, t):  # 34.6 – 42.0
+STRIKE_AT, UNDERLINE_AT = 37.0, 41.4
+
+
+def scene_end(img, t):  # 34.6 – 44.0
+    # 첫 문장: 사람이 부담스러운 게 아니었던 것 같습니다.
+    e1 = 38.4
+    fade_line(img, t, 34.8, [("그래서", GRAY)], F_MID, 640, end=e1)
+    r = fade_line(img, t, 35.3, [("사람", WHITE), ("이 부담스러운 게", WHITE)], F_BIG, 790, end=e1)
+    fade_line(img, t, 36.0, [("아니었던 것 같습니다.", WHITE)], F_BIG, 910, end=e1)
+    if r and t < e1 + 0.3:
+        draw_strike(img, t, STRIKE_AT, r[0][0], r[0][1], 790 + 60, alpha=1 - prog(t, e1, 0.3))
+
+    # 둘째 문장: 내가 이 대화를 계속 이어가야 한다는 느낌이 부담스러웠던 거죠.
     end = DURATION - 0.5
-    r = fade_line(img, t, 34.8, [("사람이 많아서", GRAY)], F_BIG, 600, end=end, out_dur=0.5)
-    fade_line(img, t, 35.4, [("편한 게 아니라,", GRAY)], F_BIG, 720, end=end, out_dur=0.5)
-    if r and t < end + 0.5:
-        draw_strike(img, t, 36.2, r[0][0], r[0][1], 600 + 60, alpha=1 - prog(t, end, 0.5))
-    r2 = fade_line(img, t, 36.9, [("내가 없어도", ACCENT)], F_BIG, 920, end=end, out_dur=0.5)
-    fade_line(img, t, 37.6, [("대화가 굴러가서", WHITE)], F_BIG, 1040, end=end, out_dur=0.5)
-    fade_line(img, t, 38.3, [("편했던 것 같습니다.", WHITE)], F_BIG, 1160, end=end, out_dur=0.5)
-    p = ease_in_out(prog(t, 39.1, 0.5)) * (1 - prog(t, end, 0.5))
+    fade_line(img, t, 38.8, [("내가 이 대화를", WHITE)], F_BIG, 720, end=end, out_dur=0.5)
+    r2 = fade_line(img, t, 39.4, [("계속 이어가야", ACCENT)], F_BIG, 840, end=end, out_dur=0.5)
+    fade_line(img, t, 40.0, [("한다는 느낌이", WHITE)], F_BIG, 960, end=end, out_dur=0.5)
+    fade_line(img, t, 40.6, [("부담스러웠던 거죠.", WHITE)], F_BIG, 1080, end=end, out_dur=0.5)
+    p = ease_in_out(prog(t, UNDERLINE_AT, 0.5)) * (1 - prog(t, end, 0.5))
     if r2 and p > 0:
         x0, x1 = r2[0]
         layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        ImageDraw.Draw(layer).rounded_rectangle((x0 - 6, 920 + 92, x0 - 6 + (x1 - x0 + 12) * p, 920 + 106), 7,
+        ImageDraw.Draw(layer).rounded_rectangle((x0 - 6, 840 + 92, x0 - 6 + (x1 - x0 + 12) * p, 840 + 106), 7,
                                                 fill=ACCENT + (230,))
         img.alpha_composite(layer)
-    fade_line(img, t, 39.8, [("단톡방에선 눈팅 전문인 사람, 댓글로 손.", GRAY)], F_SMALL, 1360, end=end, out_dur=0.5)
+    fade_line(img, t, 42.0, [("단톡방에선 눈팅 전문인 사람, 댓글로 손.", GRAY)], F_SMALL, 1280, end=end, out_dur=0.5)
 
 
 def render_frame(t):
@@ -564,7 +573,7 @@ def synth_audio(path):
         x = np.arange(L) / SR
         return vol * np.sin(2 * np.pi * f * x) * np.exp(-x * 6)
 
-    for at in (4.5, 10.0, 19.0, 28.5, 34.5):
+    for at in (4.5, 10.0, 19.0, 28.5, 34.5, 38.6):
         add(at, whoosh())
     for i in range(len(MEMBERS)):
         add(5.6 + i * 0.22, pop(0.12, base=400 + i * 40))
@@ -576,8 +585,8 @@ def synth_audio(path):
         add(st, tick())
     add(ENDED_AT, thud(0.35, base=70))
     add(30.8, thud(0.25))
-    add(36.2, thud(0.25))
-    add(39.1, thud(0.22))
+    add(STRIKE_AT, thud(0.25))
+    add(UNDERLINE_AT, thud(0.22))
 
     out *= np.minimum(1, tt / 0.5) * np.minimum(1, (DURATION - tt) / 0.8)
     data = (np.clip(out, -1, 1) * 32767).astype(np.int16)
@@ -613,7 +622,7 @@ def main():
     proc.wait()
 
     for name, t in [("thumb_hook", 3.8), ("thumb_group", 18.6), ("thumb_dm", 23.5), ("thumb_ended", 27.8),
-                    ("thumb_end", 41.0)]:
+                    ("thumb_end", 43.0)]:
         render_frame(t).save(os.path.join(OUT_DIR, f"{name}.png"))
     print("done:", mp4)
 
